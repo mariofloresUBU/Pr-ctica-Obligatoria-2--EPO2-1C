@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplicación de Baloncesto</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header>
+    <h1>Aplicación de Resultados de Baloncesto</h1>
+    <nav>
+        <ul>
+            <li><a th:href="@{/}">Inicio</a></li>
+            <li><a th:href="@{/partidos}">Partidos</a></li>
+            <li><a th:href="@{/api-test}">Test API</a></li>
+            <li><a th:href="@{/login}">Login</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <section class="welcome">
+        <h2 th:text="${welcomeMessage}">Bienvenido a la aplicación</h2>
+        <p>Fecha actual: <span th:text="${currentDateTime}">01/01/2025</span></p>
+    </section>
+
+    <section class="features">
+        <div class="feature-card">
+            <h3>Gestión de Equipos</h3>
+            <p>Administra los equipos de baloncesto, sus datos y estadísticas.</p>
+            <a th:href="@{/partidos}">Ver Equipos</a>
+        </div>
+
+        <div class="feature-card">
+            <h3>Resultados de Partidos</h3>
+            <p>Consulta los resultados de los partidos y programa nuevos encuentros.</p>
+            <a th:href="@{/partidos}">Ver Partidos</a>
+        </div>
+
+        <div class="feature-card">
+            <h3>Simulación de API</h3>
+            <p>Prueba las invocaciones a APIs de terceros (Pokémon).</p>
+            <a th:href="@{/api-test}">Probar API</a>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <p>&copy; 2025 Aplicación de Baloncesto - Desarrollada por Mario Flores</p>
+</footer>
+
+<script th:src="@{/js/scripts.js}"></script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test API - Aplicación de Baloncesto</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header>
+    <h1>Aplicación de Resultados de Baloncesto</h1>
+    <nav>
+        <ul>
+            <li><a th:href="@{/}">Inicio</a></li>
+            <li><a th:href="@{/partidos}">Partidos</a></li>
+            <li><a th:href="@{/api-test}">Test API</a></li>
+            <li><a th:href="@{/login}">Login</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <section class="api-test">
+        <h2>Prueba de API de Pokémon</h2>
+        <p>Esta página permite probar llamadas a la API de Pokémon y simular errores para probar el manejo de excepciones.</p>
+
+        <div class="pokemon-search">
+            <h3>Buscar Pokémon</h3>
+            <div class="form-group">
+                <label for="pokemon-name">Nombre o ID del Pokémon:</label>
+                <input type="text" id="pokemon-name" placeholder="Ej: pikachu, bulbasaur, 25">
+                <button id="search-pokemon" class="btn btn-primary">Buscar</button>
+            </div>
+
+            <div id="pokemon-result" class="result-container">
+                <!-- Los resultados de la búsqueda se mostrarán aquí -->
+            </div>
+        </div>
+
+        <div class="error-simulation">
+            <h3>Simular Error</h3>
+            <div class="form-group">
+                <label for="error-code">Código de Error HTTP:</label>
+                <input type="number" id="error-code" placeholder="Ej: 404, 500" min="400" max="599">
+                <button id="simulate-error" class="btn btn-danger">Simular Error</button>
+            </div>
+
+            <div id="error-result" class="result-container">
+                <!-- Los resultados del error se mostrarán aquí -->
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <p>&copy; 2025 Aplicación de Baloncesto - Desarrollada por Mario Flores</p>
+</footer>
+
+<script th:src="@{/js/scripts.js}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Evento para buscar Pokémon
+        document.getElementById('search-pokemon').addEventListener('click', function() {
+            const pokemonName = document.getElementById('pokemon-name').value.trim();
+            if (pokemonName) {
+                fetchPokemon(pokemonName);
+            }
+        });
+
+        // Evento para simular error
+        document.getElementById('simulate-error').addEventListener('click', function() {
+            const errorCode = document.getElementById('error-code').value.trim();
+            simulateError(errorCode);
+        });
+
+        // Función para buscar Pokémon
+        function fetchPokemon(nameOrId) {
+            const resultContainer = document.getElementById('pokemon-result');
+            resultContainer.innerHTML = '<p>Cargando...</p>';
+
+            fetch(`/api-test/pokemon/${nameOrId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Error HTTP: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    displayPokemon(data, resultContainer);
+                })
+                .catch(error => {
+                    resultContainer.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+                });
+        }
+
+        // Función para mostrar la información del Pokémon
+        function displayPokemon(pokemon, container) {
+            let typesHtml = '';
+            if (pokemon.types && Array.isArray(pokemon.types)) {
+                typesHtml = pokemon.types.map(type => `<span class="type ${type}">${type}</span>`).join('');
+            }
+
+            let html = `
+                <div class="pokemon-card">
+                    <h4>${pokemon.name} (#${pokemon.id})</h4>
+                    ${pokemon.image ? `<img src="${pokemon.image}" alt="${pokemon.name}">` : ''}
+                    <p>Altura: ${pokemon.height / 10} m</p>
+                    <p>Peso: ${pokemon.weight / 10} kg</p>
+                    <div class="types">
+                        Tipos: ${typesHtml || 'No disponible'}
+                    </div>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        // Función para simular un error
+        function simulateError(errorCode) {
+            const resultContainer = document.getElementById('error-result');
+            resultContainer.innerHTML = '<p>Simulando error...</p>';
+
+            fetch('/api-test/simulate-error', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `errorCode=${errorCode}`,
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Esto no debería ejecutarse, ya que esperamos un error
+                    resultContainer.innerHTML = `<p>Respuesta inesperada: ${JSON.stringify(data)}</p>`;
+                })
+                .catch(error => {
+                    resultContainer.innerHTML = `
+                        <p class="error">Error simulado correctamente</p>
+                        <p>Mensaje: ${error.message}</p>
+                        <p>Este error ha sido capturado por el manejador global de excepciones.</p>
+                    `;
+                });
+        }
+    });
+</script>
+</body>
+</html>

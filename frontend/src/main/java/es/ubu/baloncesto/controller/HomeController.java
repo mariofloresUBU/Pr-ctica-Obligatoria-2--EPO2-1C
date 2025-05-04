@@ -58,7 +58,6 @@ public class HomeController {
         model.addAttribute("appYear", LocalDateTime.now().getYear());
 
         // DEVUELVO EL NOMBRE DE LA VISTA (ABOUT.HTML EN LA CARPETA TEMPLATES)
-        // NOTA: NECESITARÁS CREAR ESTE ARCHIVO HTML EN LA CARPETA TEMPLATES
         return "about";
     }
 }

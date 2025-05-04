@@ -64,7 +64,6 @@ public class LoginController {
         model.addAttribute("errorMessage", "No tiene permiso para acceder a esta página.");
 
         // DEVUELVO LA VISTA DE ACCESO DENEGADO
-        // NOTA: NECESITARÁS CREAR ESTE ARCHIVO HTML EN LA CARPETA TEMPLATES
         return "access-denied";
     }
 }
