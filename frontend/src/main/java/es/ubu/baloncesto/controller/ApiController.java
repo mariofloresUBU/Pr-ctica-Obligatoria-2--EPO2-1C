@@ -27,6 +27,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("/api-test")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class ApiController {
 
     /**
@@ -73,52 +74,20 @@ public class ApiController {
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getPokemon(@PathVariable String pokemonId) {
         try {
-            // CONSTRUYO LA URL DE LA API
-            String url = pokemonApiUrl + "pokemon/" + pokemonId.toLowerCase();
+            // Construyo la URL de la API local
+            String url = "http://localhost:5000/api/pokemon/" + pokemonId.toLowerCase();
 
-            // HAGO LA PETICIÓN HTTP
+            // Hago la petición HTTP
             ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
 
-            // EXTRAIGO LOS DATOS RELEVANTES
-            Map<String, Object> pokemonData = new HashMap<>();
-            Map<String, Object> responseBody = response.getBody();
-
-            if (responseBody != null) {
-                pokemonData.put("id", responseBody.get("id"));
-                pokemonData.put("name", responseBody.get("name"));
-                pokemonData.put("height", responseBody.get("height"));
-                pokemonData.put("weight", responseBody.get("weight"));
-
-                // EXTRAIGO LOS TIPOS
-                if (responseBody.containsKey("types")) {
-                    Object[] types = (Object[]) responseBody.get("types");
-                    String[] typeNames = new String[types.length];
-
-                    for (int i = 0; i < types.length; i++) {
-                        Map<String, Object> typeData = (Map<String, Object>) types[i];
-                        Map<String, Object> type = (Map<String, Object>) typeData.get("type");
-                        typeNames[i] = (String) type.get("name");
-                    }
-
-                    pokemonData.put("types", typeNames);
-                }
-
-                // EXTRAIGO LA URL DE LA IMAGEN
-                if (responseBody.containsKey("sprites")) {
-                    Map<String, Object> sprites = (Map<String, Object>) responseBody.get("sprites");
-                    pokemonData.put("image", sprites.get("front_default"));
-                }
-            }
-
-            // DEVUELVO LOS DATOS DEL POKÉMON
-            return ResponseEntity.ok(pokemonData);
+            // Devuelvo los datos del Pokémon
+            return ResponseEntity.ok(response.getBody());
         } catch (RestClientException e) {
-            // SI HAY UN ERROR, LANZO UNA EXCEPCIÓN PERSONALIZADA
+            // Si hay un error, lanzo una excepción personalizada
             throw new ApiException("Error al obtener datos del Pokémon: " + e.getMessage(),
-                    e, pokemonApiUrl + "pokemon/" + pokemonId);
+                    e, "http://localhost:5000/api/pokemon/" + pokemonId);
         }
     }
-
     /**
      * Simula un error en la API para probar el manejo de excepciones.
      *

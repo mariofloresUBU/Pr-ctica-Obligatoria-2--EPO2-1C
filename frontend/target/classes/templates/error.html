@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error - Aplicación de Baloncesto</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header>
+    <h1>Aplicación de Resultados de Baloncesto</h1>
+    <nav>
+        <ul>
+            <li><a th:href="@{/}">Inicio</a></li>
+            <li><a th:href="@{/partidos}">Partidos</a></li>
+            <li><a th:href="@{/api-test}">Test API</a></li>
+            <li><a th:href="@{/login}">Login</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <section class="error-container">
+        <h2 th:text="${errorTitle ?: 'Error'}">Error</h2>
+
+        <div class="error-details">
+            <p class="error-message" th:text="${errorMessage ?: 'Ha ocurrido un error inesperado.'}">Ha ocurrido un error inesperado.</p>
+
+            <p th:if="${errorDetails}" class="error-details" th:text="${errorDetails}"></p>
+
+            <p class="error-code" th:if="${status}">
+                Código de estado: <span th:text="${status}">500</span>
+            </p>
+
+            <p class="timestamp" th:if="${timestamp}">
+                Fecha y hora: <span th:text="${#dates.format(new java.util.Date(timestamp), 'dd/MM/yyyy HH:mm:ss')}">01/01/2025 00:00:00</span>
+            </p>
+        </div>
+
+        <div class="actions">
+            <a th:href="@{/}" class="btn btn-primary">Volver al inicio</a>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <p>&copy; 2025 Aplicación de Baloncesto - Desarrollada por Mario Flores</p>
+</footer>
+
+<script th:src="@{/js/scripts.js}"></script>
+</body>
+</html>

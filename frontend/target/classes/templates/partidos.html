@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partidos - Aplicación de Baloncesto</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header>
+    <h1>Aplicación de Resultados de Baloncesto</h1>
+    <nav>
+        <ul>
+            <li><a th:href="@{/}">Inicio</a></li>
+            <li><a th:href="@{/partidos}">Partidos</a></li>
+            <li><a th:href="@{/api-test}">Test API</a></li>
+            <li><a th:href="@{/login}">Login</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <section class="partidos-container">
+        <h2 th:text="${titulo}">Lista de Partidos</h2>
+
+        <div class="actions">
+            <a th:href="@{/partidos/nuevo}" class="btn btn-primary">Nuevo Partido</a>
+        </div>
+
+        <div class="partidos-list">
+            <div th:if="${partidos.isEmpty()}" class="empty-message">
+                <p>No hay partidos programados</p>
+            </div>
+
+            <table th:if="${!partidos.isEmpty()}" class="partidos-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Local</th>
+                    <th>Visitante</th>
+                    <th>Fecha</th>
+                    <th>Resultado</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="partido : ${partidos}">
+                    <td th:text="${partido.id}">1</td>
+                    <td th:text="${partido.equipoLocal.nombre}">Equipo Local</td>
+                    <td th:text="${partido.equipoVisitante.nombre}">Equipo Visitante</td>
+                    <td th:text="${#temporals.format(partido.fecha, 'dd/MM/yyyy HH:mm')}">01/01/2025 20:00</td>
+                    <td th:if="${partido.finalizado}" th:text="${partido.puntosLocal + ' - ' + partido.puntosVisitante}">85 - 78</td>
+                    <td th:unless="${partido.finalizado}">-</td>
+                    <td th:text="${partido.finalizado ? 'Finalizado' : 'Pendiente'}">Estado</td>
+                    <td class="actions">
+                        <a th:if="${!partido.finalizado}" th:href="@{/partidos/resultado/{id}(id=${partido.id})}" class="btn btn-sm btn-primary">Registrar Resultado</a>
+                        <a th:href="@{/partidos/eliminar/{id}(id=${partido.id})}" class="btn btn-sm btn-danger" onclick="return confirm('¿Está seguro de eliminar este partido?')">Eliminar</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <p>&copy; 2025 Aplicación de Baloncesto - Desarrollada por Mario Flores</p>
+</footer>
+
+<script th:src="@{/js/scripts.js}"></script>
+</body>
+</html>

@@ -41,6 +41,41 @@ def healthcheck():
         'timestamp': datetime.now().isoformat()
     })
 
+@api.route('/pokemon/<pokemon_id>', methods=['GET'])
+def get_pokemon(pokemon_id):
+    """
+    Obtiene información de un Pokémon por su ID o nombre.
+
+    Args:
+        pokemon_id: ID o nombre del Pokémon
+
+    Returns:
+        Datos del Pokémon en formato JSON
+    """
+    try:
+        # URL de la API de Pokémon
+        url = f"https://pokeapi.co/api/v2/pokemon/{pokemon_id.lower()}"
+
+        # Realizo la petición HTTP
+        import requests
+        response = requests.get(url)
+        response.raise_for_status()  # Lanza una excepción si hay error
+
+        # Extraigo los datos relevantes
+        data = response.json()
+        pokemon_data = {
+            'id': data['id'],
+            'name': data['name'],
+            'height': data['height'],
+            'weight': data['weight'],
+            'types': [t['type']['name'] for t in data['types']],
+            'image': data['sprites']['front_default']
+        }
+
+        return jsonify(pokemon_data)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 # ENDPOINTS PARA EQUIPOS
 
 @api.route('/equipos', methods=['GET'])
