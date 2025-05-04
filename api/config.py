@@ -27,8 +27,7 @@ DEBUG = True
 SECRET_KEY = 'mi_clave_secreta_para_desarrollo'
 
 # CONFIGURACIÓN DE LA BASE DE DATOS SQLITE
-# EN DESARROLLO USO UN ARCHIVO TEMPORAL
-# EN PRODUCCIÓN ESTO DEBERÍA SER UNA BASE DE DATOS REAL
+
 DB_FILE = os.path.join(basedir, 'baloncesto.db')
 SQLALCHEMY_DATABASE_URI = f'sqlite:///{DB_FILE}'
 

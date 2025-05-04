@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -89,7 +88,6 @@ public class ApiController {
         }
     }
 
-
     /**
      * Simula un error en la API para probar el manejo de excepciones.
      *
@@ -109,7 +107,7 @@ public class ApiController {
             // Hago la petición HTTP
             restTemplate.postForEntity(url, null, Map.class);
 
-            // Esta línea no debería ejecutarse ya que la petición anterior debería lanzar una excepción
+            // Esta línea no debería ejecutarse ya que la petición anterior debería lanzar una excepción. Si lo hace, "oh"
             return ResponseEntity.ok(Map.of("error", "No se ha producido el error esperado"));
         } catch (RestClientException e) {
             // Lanzo una excepción personalizada

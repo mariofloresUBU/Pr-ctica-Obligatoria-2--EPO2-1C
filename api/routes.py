@@ -12,20 +12,17 @@ Version: 1.0
 Date: 2025-05-04
 """
 
-from flask import jsonify, request, Blueprint
-from app import app, db
-from models import Equipo, Partido
-import logging
+from flask import jsonify, request, Blueprint, current_app
+from __init__ import db, logger  # Añadir esta línea
+from models import Equipo, Partido  # Añadir esta línea
 import requests
+from flask_cors import CORS
 import traceback
 from datetime import datetime
 
-# CONFIGURO EL LOGGER
-logger = logging.getLogger(__name__)
-
 # CREO UN BLUEPRINT PARA LA API
-api = Blueprint('api', __name__, url_prefix='/api')
-
+api = Blueprint('api', __name__, url_prefix='/api')  # Corregir __name__ (está con ** que es un error)
+CORS(api)
 
 @api.route('/healthcheck', methods=['GET'])
 def healthcheck():
@@ -59,7 +56,6 @@ def get_pokemon(pokemon_id):
         url = f"https://pokeapi.co/api/v2/pokemon/{pokemon_id.lower()}"
 
         # Realizo la petición HTTP
-        import requests
         response = requests.get(url)
         response.raise_for_status()  # Lanza una excepción si hay error
 
@@ -109,6 +105,7 @@ def get_equipos():
     """
     try:
         logger.info("Obteniendo todos los equipos")
+        from models import Equipo
         equipos = Equipo.query.all()
         return jsonify([equipo.to_dict() for equipo in equipos])
     except Exception as e:
@@ -129,6 +126,7 @@ def get_equipo(id):
     """
     try:
         logger.info(f"Obteniendo equipo con ID: {id}")
+        from models import Equipo
         equipo = Equipo.query.get(id)
 
         if equipo:
@@ -151,6 +149,8 @@ def create_equipo():
     try:
         logger.info("Creando nuevo equipo")
         data = request.get_json()
+        from models import Equipo
+        from app import db
 
         # VERIFICO QUE LOS DATOS REQUERIDOS ESTÉN PRESENTES
         if not all(k in data for k in ['nombre', 'ciudad', 'entrenador']):
@@ -169,6 +169,7 @@ def create_equipo():
         logger.info(f"Equipo creado con ID: {equipo.id}")
         return jsonify(equipo.to_dict()), 201
     except Exception as e:
+        from app import db
         db.session.rollback()
         logger.error(f"Error al crear equipo: {str(e)}")
         return jsonify({'error': 'Error al crear equipo', 'details': str(e)}), 500
@@ -187,6 +188,8 @@ def update_equipo(id):
     """
     try:
         logger.info(f"Actualizando equipo con ID: {id}")
+        from models import Equipo
+        from app import db
         equipo = Equipo.query.get(id)
 
         if not equipo:
@@ -207,6 +210,7 @@ def update_equipo(id):
         logger.info(f"Equipo {id} actualizado correctamente")
         return jsonify(equipo.to_dict())
     except Exception as e:
+        from app import db
         db.session.rollback()
         logger.error(f"Error al actualizar equipo {id}: {str(e)}")
         return jsonify({'error': 'Error al actualizar equipo', 'details': str(e)}), 500
@@ -225,6 +229,8 @@ def delete_equipo(id):
     """
     try:
         logger.info(f"Eliminando equipo con ID: {id}")
+        from models import Equipo
+        from app import db
         equipo = Equipo.query.get(id)
 
         if not equipo:
@@ -236,6 +242,7 @@ def delete_equipo(id):
         logger.info(f"Equipo {id} eliminado correctamente")
         return jsonify({'message': f'Equipo {id} eliminado correctamente'})
     except Exception as e:
+        from app import db
         db.session.rollback()
         logger.error(f"Error al eliminar equipo {id}: {str(e)}")
         return jsonify({'error': 'Error al eliminar equipo', 'details': str(e)}), 500
@@ -253,6 +260,7 @@ def get_partidos():
     """
     try:
         logger.info("Obteniendo todos los partidos")
+        from models import Partido
         partidos = Partido.query.all()
         return jsonify([partido.to_dict() for partido in partidos])
     except Exception as e:
@@ -273,6 +281,7 @@ def get_partido(id):
     """
     try:
         logger.info(f"Obteniendo partido con ID: {id}")
+        from models import Partido
         partido = Partido.query.get(id)
 
         if partido:
@@ -295,6 +304,8 @@ def create_partido():
     try:
         logger.info("Creando nuevo partido")
         data = request.get_json()
+        from models import Partido
+        from app import db
 
         # VERIFICO QUE LOS DATOS REQUERIDOS ESTÉN PRESENTES
         if not all(k in data for k in ['equipo_local_id', 'equipo_visitante_id', 'fecha']):
@@ -317,6 +328,7 @@ def create_partido():
         logger.info(f"Partido creado con ID: {partido.id}")
         return jsonify(partido.to_dict()), 201
     except Exception as e:
+        from app import db
         db.session.rollback()
         logger.error(f"Error al crear partido: {str(e)}")
         return jsonify({'error': 'Error al crear partido', 'details': str(e)}), 500
@@ -335,6 +347,8 @@ def registrar_resultado(id):
     """
     try:
         logger.info(f"Registrando resultado para partido con ID: {id}")
+        from models import Partido
+        from app import db
         partido = Partido.query.get(id)
 
         if not partido:
@@ -361,6 +375,7 @@ def registrar_resultado(id):
         logger.info(f"Resultado registrado para partido {id}")
         return jsonify(partido.to_dict())
     except Exception as e:
+        from app import db
         db.session.rollback()
         logger.error(f"Error al registrar resultado para partido {id}: {str(e)}")
         return jsonify({'error': 'Error al registrar resultado', 'details': str(e)}), 500
@@ -379,6 +394,8 @@ def delete_partido(id):
     """
     try:
         logger.info(f"Eliminando partido con ID: {id}")
+        from models import Partido
+        from app import db
         partido = Partido.query.get(id)
 
         if not partido:
@@ -390,6 +407,7 @@ def delete_partido(id):
         logger.info(f"Partido {id} eliminado correctamente")
         return jsonify({'message': f'Partido {id} eliminado correctamente'})
     except Exception as e:
+        from app import db
         db.session.rollback()
         logger.error(f"Error al eliminar partido {id}: {str(e)}")
         return jsonify({'error': 'Error al eliminar partido', 'details': str(e)}), 500
@@ -426,10 +444,12 @@ def database_exception():
     """
     try:
         logger.info("Simulando excepción de base de datos")
+        from app import db
         # EJECUTO UNA CONSULTA INVÁLIDA
         db.session.execute("SELECT * FROM tabla_inexistente")
         return jsonify({'message': 'Consulta ejecutada correctamente'})
     except Exception as e:
+        from app import db
         db.session.rollback()
         logger.error(f"Error de base de datos: {str(e)}")
         return jsonify({'error': 'Error de base de datos', 'details': str(e)}), 500
@@ -453,6 +473,4 @@ def api_exception():
         logger.error(f"Error de API: {str(e)}")
         return jsonify({'error': 'Error de API', 'details': str(e)}), 500
 
-
-# REGISTRO EL BLUEPRINT EN LA APLICACIÓN
-app.register_blueprint(api)
+# No registramos el blueprint aquí, lo hare en app.py
