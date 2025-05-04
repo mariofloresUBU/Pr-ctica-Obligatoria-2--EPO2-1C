@@ -30,16 +30,50 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Inicializar la base de datos
 db = SQLAlchemy(app)
 
-# Importar rutas después de crear la aplicación y la DB
-# Esto evita las referencias circulares
-if __name__ == '__main__':
-    # Las importaciones deben estar dentro de la función main
-    from models import Equipo, Partido
-    from routes import *
+# Importar models para evitar referencias circulares
+from models import Equipo, Partido
 
+# Importar rutas después de crear la aplicación y la DB
+from routes import *
+
+# Bloque principal
+if __name__ == '__main__':
     # Crear tablas de la base de datos
     with app.app_context():
         db.create_all()
+
+        # Verificar si ya existen equipos
+        if Equipo.query.count() == 0:
+            # Crear equipos de la Liga Endesa 2024-2025
+            equipos = [
+                Equipo(nombre="Real Madrid", ciudad="Madrid", entrenador="Chus Mateo"),
+                Equipo(nombre="FC Barcelona", ciudad="Barcelona", entrenador="Joan Peñarroya"),
+                Equipo(nombre="Unicaja", ciudad="Málaga", entrenador="Ibon Navarro"),
+                Equipo(nombre="Baskonia", ciudad="Vitoria", entrenador="Pablo Laso"),
+                Equipo(nombre="Valencia Basket", ciudad="Valencia", entrenador="Pedro Martínez"),
+                Equipo(nombre="UCAM Murcia", ciudad="Murcia", entrenador="Sito Alonso"),
+                Equipo(nombre="Gran Canaria", ciudad="Las Palmas", entrenador="Jaka Lakovic"),
+                Equipo(nombre="Joventut Badalona", ciudad="Badalona", entrenador="Carles Durán"),
+                Equipo(nombre="Zaragoza", ciudad="Zaragoza", entrenador="Porfirio Fisac"),
+                Equipo(nombre="Breogán", ciudad="Lugo", entrenador="Luis Casimiro"),
+                Equipo(nombre="Bàsquet Girona", ciudad="Girona", entrenador="Fotis Katsikaris"),
+                Equipo(nombre="MoraBanc Andorra", ciudad="Andorra", entrenador="Natxo Lezkano"),
+                Equipo(nombre="La Laguna Tenerife", ciudad="Tenerife", entrenador="Txus Vidorreta"),
+                Equipo(nombre="Coviran Granada", ciudad="Granada", entrenador="Pablo Pin"),
+                Equipo(nombre="ICL Manresa", ciudad="Manresa", entrenador="Diego Ocampo"),
+                Equipo(nombre="Leyma Coruña", ciudad="A Coruña", entrenador="Diego Epifanio"),
+                Equipo(nombre="Força Lleida", ciudad="Lleida", entrenador="Gerard Encuentra"),
+                Equipo(nombre="Bilbao Basket", ciudad="Bilbao", entrenador="Jaume Ponsarnau")
+            ]
+
+            # Añadir todos los equipos a la base de datos
+            for equipo in equipos:
+                db.session.add(equipo)
+
+            # Guardar cambios
+            db.session.commit()
+            logger.info("Base de datos inicializada con los 18 equipos de la Liga Endesa 2024-2025")
+
         logger.info("Base de datos inicializada")
 
     # Iniciar el servidor
