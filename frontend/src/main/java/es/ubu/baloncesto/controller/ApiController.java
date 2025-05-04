@@ -88,6 +88,8 @@ public class ApiController {
                     e, "http://localhost:5000/api/pokemon/" + pokemonId);
         }
     }
+
+
     /**
      * Simula un error en la API para probar el manejo de excepciones.
      *
@@ -97,11 +99,22 @@ public class ApiController {
     @PostMapping("/simulate-error")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> simulateError(@RequestParam(required = false) Integer errorCode) {
-        // DETERMINO EL CÓDIGO DE ERROR
-        int statusCode = (errorCode != null) ? errorCode : 500;
+        try {
+            // Determino el código de error o uso 500 por defecto
+            int statusCode = (errorCode != null) ? errorCode : 500;
 
-        // LANZO UNA EXCEPCIÓN PERSONALIZADA
-        throw new ApiException("Error simulado para pruebas",
-                null, "https://api.example.com/simulated-error", statusCode);
+            // Construyo la URL de la API local
+            String url = "http://localhost:5000/api/errors/simulate/" + statusCode;
+
+            // Hago la petición HTTP
+            restTemplate.postForEntity(url, null, Map.class);
+
+            // Esta línea no debería ejecutarse ya que la petición anterior debería lanzar una excepción
+            return ResponseEntity.ok(Map.of("error", "No se ha producido el error esperado"));
+        } catch (RestClientException e) {
+            // Lanzo una excepción personalizada
+            throw new ApiException("Error simulado para pruebas",
+                    e, "http://localhost:5000/api/errors/simulate", errorCode);
+        }
     }
 }

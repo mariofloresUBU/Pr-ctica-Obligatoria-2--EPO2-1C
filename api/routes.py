@@ -26,6 +26,7 @@ logger = logging.getLogger(__name__)
 # CREO UN BLUEPRINT PARA LA API
 api = Blueprint('api', __name__, url_prefix='/api')
 
+
 @api.route('/healthcheck', methods=['GET'])
 def healthcheck():
     """
@@ -40,6 +41,7 @@ def healthcheck():
         'message': 'API de baloncesto funcionando correctamente',
         'timestamp': datetime.now().isoformat()
     })
+
 
 @api.route('/pokemon/<pokemon_id>', methods=['GET'])
 def get_pokemon(pokemon_id):
@@ -76,6 +78,25 @@ def get_pokemon(pokemon_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+
+@api.route('/errors/simulate/<int:error_code>', methods=['POST'])
+def simulate_error(error_code):
+    """
+    Simula un error HTTP con el código especificado.
+
+    Args:
+        error_code: Código de error HTTP a simular
+
+    Returns:
+        Error con el código especificado
+    """
+    # Validar el código de error
+    if 400 <= error_code <= 599:
+        return jsonify({'error': f'Error simulado: {error_code}'}), error_code
+    else:
+        return jsonify({'error': 'Código de error no válido (debe estar entre 400 y 599)'}), 400
+
+
 # ENDPOINTS PARA EQUIPOS
 
 @api.route('/equipos', methods=['GET'])
@@ -93,6 +114,7 @@ def get_equipos():
     except Exception as e:
         logger.error(f"Error al obtener equipos: {str(e)}")
         return jsonify({'error': 'Error al obtener equipos', 'details': str(e)}), 500
+
 
 @api.route('/equipos/<int:id>', methods=['GET'])
 def get_equipo(id):
@@ -116,6 +138,7 @@ def get_equipo(id):
     except Exception as e:
         logger.error(f"Error al obtener equipo {id}: {str(e)}")
         return jsonify({'error': 'Error al obtener equipo', 'details': str(e)}), 500
+
 
 @api.route('/equipos', methods=['POST'])
 def create_equipo():
@@ -149,6 +172,7 @@ def create_equipo():
         db.session.rollback()
         logger.error(f"Error al crear equipo: {str(e)}")
         return jsonify({'error': 'Error al crear equipo', 'details': str(e)}), 500
+
 
 @api.route('/equipos/<int:id>', methods=['PUT'])
 def update_equipo(id):
@@ -187,6 +211,7 @@ def update_equipo(id):
         logger.error(f"Error al actualizar equipo {id}: {str(e)}")
         return jsonify({'error': 'Error al actualizar equipo', 'details': str(e)}), 500
 
+
 @api.route('/equipos/<int:id>', methods=['DELETE'])
 def delete_equipo(id):
     """
@@ -215,6 +240,7 @@ def delete_equipo(id):
         logger.error(f"Error al eliminar equipo {id}: {str(e)}")
         return jsonify({'error': 'Error al eliminar equipo', 'details': str(e)}), 500
 
+
 # ENDPOINTS PARA PARTIDOS
 
 @api.route('/partidos', methods=['GET'])
@@ -232,6 +258,7 @@ def get_partidos():
     except Exception as e:
         logger.error(f"Error al obtener partidos: {str(e)}")
         return jsonify({'error': 'Error al obtener partidos', 'details': str(e)}), 500
+
 
 @api.route('/partidos/<int:id>', methods=['GET'])
 def get_partido(id):
@@ -255,6 +282,7 @@ def get_partido(id):
     except Exception as e:
         logger.error(f"Error al obtener partido {id}: {str(e)}")
         return jsonify({'error': 'Error al obtener partido', 'details': str(e)}), 500
+
 
 @api.route('/partidos', methods=['POST'])
 def create_partido():
@@ -292,6 +320,7 @@ def create_partido():
         db.session.rollback()
         logger.error(f"Error al crear partido: {str(e)}")
         return jsonify({'error': 'Error al crear partido', 'details': str(e)}), 500
+
 
 @api.route('/partidos/<int:id>/resultado', methods=['POST'])
 def registrar_resultado(id):
@@ -336,6 +365,7 @@ def registrar_resultado(id):
         logger.error(f"Error al registrar resultado para partido {id}: {str(e)}")
         return jsonify({'error': 'Error al registrar resultado', 'details': str(e)}), 500
 
+
 @api.route('/partidos/<int:id>', methods=['DELETE'])
 def delete_partido(id):
     """
@@ -364,6 +394,7 @@ def delete_partido(id):
         logger.error(f"Error al eliminar partido {id}: {str(e)}")
         return jsonify({'error': 'Error al eliminar partido', 'details': str(e)}), 500
 
+
 # ENDPOINTS PARA SIMULAR EXCEPCIONES
 
 @api.route('/exceptions/file', methods=['GET'])
@@ -384,6 +415,7 @@ def file_exception():
         logger.error(f"Error de archivo: {str(e)}")
         return jsonify({'error': 'Error de archivo', 'details': str(e)}), 500
 
+
 @api.route('/exceptions/database', methods=['GET'])
 def database_exception():
     """
@@ -402,6 +434,7 @@ def database_exception():
         logger.error(f"Error de base de datos: {str(e)}")
         return jsonify({'error': 'Error de base de datos', 'details': str(e)}), 500
 
+
 @api.route('/exceptions/api', methods=['GET'])
 def api_exception():
     """
@@ -419,6 +452,7 @@ def api_exception():
     except Exception as e:
         logger.error(f"Error de API: {str(e)}")
         return jsonify({'error': 'Error de API', 'details': str(e)}), 500
+
 
 # REGISTRO EL BLUEPRINT EN LA APLICACIÓN
 app.register_blueprint(api)
