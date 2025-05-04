@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Resultado - Aplicación de Baloncesto</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header>
+    <h1>Aplicación de Resultados de Baloncesto</h1>
+    <nav>
+        <ul>
+            <li><a th:href="@{/}">Inicio</a></li>
+            <li><a th:href="@{/partidos}">Partidos</a></li>
+            <li><a th:href="@{/api-test}">Test API</a></li>
+            <li><a th:href="@{/login}">Login</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <section class="form-container">
+        <h2 th:text="${titulo}">Registrar Resultado</h2>
+
+        <div class="partido-info">
+            <p>
+                <strong>Partido:</strong>
+                <span th:text="${partido.equipoLocal.nombre + ' vs ' + partido.equipoVisitante.nombre}">Equipo Local vs Equipo Visitante</span>
+            </p>
+            <p>
+                <strong>Fecha:</strong>
+                <span th:text="${#temporals.format(partido.fecha, 'dd/MM/yyyy HH:mm')}">01/01/2025 20:00</span>
+            </p>
+        </div>
+
+        <form th:action="@{/partidos/resultado/{id}(id=${partido.id})}" method="post">
+            <div class="form-group">
+                <label for="puntosLocal" th:text="${partido.equipoLocal.nombre + ' (Local):'}">Equipo Local:</label>
+                <input type="number" id="puntosLocal" name="puntosLocal" min="0" required>
+            </div>
+
+            <div class="form-group">
+                <label for="puntosVisitante" th:text="${partido.equipoVisitante.nombre + ' (Visitante):'}">Equipo Visitante:</label>
+                <input type="number" id="puntosVisitante" name="puntosVisitante" min="0" required>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Guardar Resultado</button>
+                <a th:href="@{/partidos}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </section>
+</main>
+
+<footer>
+    <p>&copy; 2025 Aplicación de Baloncesto - Desarrollada por Mario Flores</p>
+</footer>
+
+<script th:src="@{/js/scripts.js}"></script>
+</body>
+</html>

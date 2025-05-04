@@ -1,0 +1,25 @@
+# Dependencias básicas
+Flask==2.3.2
+Flask-SQLAlchemy==3.0.3
+Flask-Cors==4.0.0
+SQLAlchemy==2.0.16
+Werkzeug==2.3.6
+
+# Para hacer peticiones HTTP
+requests==2.31.0
+
+# Para logs
+python-json-logger==2.0.7
+
+# Para manejar fechas y tiempos
+python-dateutil==2.8.2
+
+# Para debuggear
+Flask-DebugToolbar==0.13.1
+
+# Para pruebas
+pytest==7.3.1
+pytest-flask==1.2.0
+
+# Para producción
+gunicorn==20.1.0
