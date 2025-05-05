@@ -13,6 +13,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+
 /**
  * Configuración de seguridad para la aplicación.
  * Define las reglas de acceso, el servicio de autenticación y los usuarios.
@@ -39,7 +43,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 // PERMITO ACCESO PÚBLICO A RECURSOS ESTÁTICOS Y PÁGINA PRINCIPAL
                 .antMatchers("/css/**", "/js/**", "/", "/about", "/api/**").permitAll()
-                // REQUIERO AUTENTICACIÓN PARA LAS DEMÁS RUTAS
+                // PIDO AUTENTICACIÓN PARA LAS DEMÁS RUTAS
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
@@ -61,8 +65,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .accessDeniedPage("/access-denied");
 
         // DESACTIVO CSRF PARA LAS LLAMADAS A LA API
-        // ESTO ES NECESARIO PARA QUE FUNCIONEN LAS LLAMADAS DESDE POSTMAN O JAVASCRIPT
         http.csrf().ignoringAntMatchers("/api/**");
+
+        // ACTIVO CORS PARA PERMITIR PETICIONES DESDE FLASK (PUERTO 5000)
+        http.cors();
     }
 
     /**
@@ -100,5 +106,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         // DEVUELVO UN GESTOR DE USUARIOS EN MEMORIA
         return new InMemoryUserDetailsManager(user, admin);
+    }
+
+    /**
+     * Filtro CORS global para permitir llamadas desde localhost:5000 (Flask)
+     *
+     * @return Instancia del filtro CORS configurado
+     */
+    @Bean
+    public CorsFilter corsFilter() {
+        // CONFIGURO EL FILTRO CORS PARA PERMITIR PETICIONES DESDE EL BACKEND FLASK
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.addAllowedOrigin("http://localhost:5000");
+        config.addAllowedMethod("*");
+        config.addAllowedHeader("*");
+        config.setAllowCredentials(true);
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
     }
 }
